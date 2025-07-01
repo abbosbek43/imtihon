@@ -1,35 +1,52 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { AuthModule } from './auth/auth.module';
+import { AuthModule } from './modules/security/auth/auth.module';
+import { ProfilesModule } from './modules/foydalanuvchilar/profiles/profiles.module';
+import { SubscriptionPlansModule } from './modules/finance-managment/subscription_plans/subscription_plans.module';
+import { UserSubscriptionsModule } from './modules/finance-managment/user_subscriptions/user_subscriptions.module';
+import { PaymentsModule } from './modules/finance-managment/payments/payments.module';
+import { CategoriesModule } from './modules/file-managment/categories/categories.module';
 
-import { ProfilesModule } from './profiles/profiles.module';
-import { SubscriptionPlansModule } from './subscription_plans/subscription_plans.module';
-import { UserSubscriptionsModule } from './user_subscriptions/user_subscriptions.module';
-import { PaymentsModule } from './payments/payments.module';
-import { CategoriesModule } from './categories/categories.module';
-import { MoviesModule } from './movies/movies.module';
-import { MovieCategoriesModule } from './movie_categories/movie_categories.module';
-import { MovieFilesModule } from './movie_files/movie_files.module';
-import { FavoritesModule } from './favorites/favorites.module';
-import { ReviewsModule } from './reviews/reviews.module';
-import { PrismaService } from './prisma/prisma.service';
-import { PrismaModule } from './prisma/prisma.module';
-import { TokenModule } from './token/token.module';
-import { MailerModule } from './mailer/mailer.module';
-import { RedisModule } from './redis/redis.module';
+import { FavoritesModule } from './modules/foydalanuvchilar/favorites/favorites.module';
+import { ReviewsModule } from './modules/foydalanuvchilar/reviews/reviews.module';
+import { PrismaService } from './common/prisma/prisma.service';
+import { PrismaModule } from './common/prisma/prisma.module';
+import { TokenModule } from './modules/security/token/token.module';
+import { MailerModule } from './modules/security/mailer/mailer.module';
+import { RedisModule } from './modules/security/redis/redis.module';
 import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
-
-
+import { GuardService } from './common/guards/guards.service';
+import { UsersModule } from './modules/foydalanuvchilar/users/users.module';
+import { MoviesModule } from './modules/file-managment/movies/movies.module';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    JwtModule.register({}), 
-  
-    AuthModule,  ProfilesModule, SubscriptionPlansModule, UserSubscriptionsModule, PaymentsModule, CategoriesModule, MoviesModule, MovieCategoriesModule, MovieFilesModule, FavoritesModule, ReviewsModule, PrismaModule, TokenModule, MailerModule, RedisModule],
-  controllers: [AppController],
-  providers: [AppService, PrismaService],
+    JwtModule.register({ global: true ,secret : "molxona"}),
+    AuthModule,
+    ProfilesModule,
+    SubscriptionPlansModule,
+    UserSubscriptionsModule,
+    // PaymentsModule,
+    CategoriesModule,
+    FavoritesModule,
+    ReviewsModule,
+    // PrismaModule,
+    // TokenModule,
+    // MailerModule,
+    // RedisModule,
+    UsersModule,
+    MoviesModule,
+  ],
+  providers: [
+    PrismaService,
+    GuardService,
+    {
+      provide: APP_GUARD,
+      useClass : GuardService,
+    },
+  ],
+  exports: [GuardService],
 })
 export class AppModule {}

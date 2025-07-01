@@ -77,6 +77,7 @@ model Profile {
   phone     String
   country   String
   createdAt DateTime @default(now())
+  avatarUrl    String?
 }
 
 model SubscriptionPlan {
@@ -95,8 +96,8 @@ model UserSubscription {
   userId     String
   plan       SubscriptionPlan @relation(fields: [planId], references: [id])
   planId     String
-  startDate  DateTime         @default(now())
-  endDate    DateTime
+  startDate  DateTime?         
+  endDate    DateTime?
   status     SubscriptionStatus @default(pending_payment)
   autoRenew  Boolean           @default(false)
   createdAt  DateTime          @default(now())
@@ -110,7 +111,7 @@ model Payment {
   amount               Decimal
   paymentMethod        PaymentMethod
   paymentDetails       Json
-  status               PaymentStatus
+  status               PaymentStatus @default(pending)
   externalTransactionId String
   createdAt            DateTime       @default(now())
 }
@@ -130,7 +131,7 @@ model Movie {
   description     String
   releaseYear     Int
   durationMinutes Int
-  posterUrl       String
+  posterUrl       String?
   rating          Decimal
   subscriptionType SubscriptionType @default(free)
   viewCount       Int              @default(0)
@@ -150,6 +151,7 @@ model MovieCategory {
   movieId    String
   category   Category @relation(fields: [categoryId], references: [id])
   categoryId String
+  @@map("moviecategories")
 }
 
 model MovieFile {
@@ -190,6 +192,6 @@ model WatchHistory {
   movie            Movie    @relation(fields: [movieId], references: [id])
   movieId          String
   watchedDuration  Int
-  watchedPercentage Decimal
+  watchedPercentage Decimal @db.Decimal(3,2)
   lastWatched      DateTime @default(now())
 }
