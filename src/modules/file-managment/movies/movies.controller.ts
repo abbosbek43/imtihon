@@ -22,8 +22,8 @@ export class MoviesController {
   constructor(private readonly moviesService: MoviesService) {}
 
   @Post()
-  @UseInterceptors(FileInterceptor('poster',{storage : storagePoster})) // <== fayl uchun interceptor
-  @ApiConsumes('multipart/form-data') // <== form-data yuborish uchun
+  @UseInterceptors(FileInterceptor('poster',{storage : storagePoster})) 
+  @ApiConsumes('multipart/form-data') 
   @ApiBody(swaggerOptions)
   @ApiOperation({ summary: 'Create a new movie with poster' })
   create(
@@ -43,7 +43,7 @@ export class MoviesController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.moviesService.findOne(+id);
+    return this.moviesService.findOne(id);
   }
 
   @Patch(':id')
@@ -53,6 +53,6 @@ export class MoviesController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.moviesService.remove(+id);
+    return this.moviesService.remove(id);
   }
 }

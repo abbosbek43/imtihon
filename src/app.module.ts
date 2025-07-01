@@ -19,6 +19,7 @@ import { GuardService } from './common/guards/guards.service';
 import { UsersModule } from './modules/foydalanuvchilar/users/users.module';
 import { MoviesModule } from './modules/file-managment/movies/movies.module';
 import { APP_GUARD } from '@nestjs/core';
+import { HistoryModule } from './modules/foydalanuvchilar/history/history.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { APP_GUARD } from '@nestjs/core';
     // RedisModule,
     UsersModule,
     MoviesModule,
+    HistoryModule,
   ],
   providers: [
     PrismaService,

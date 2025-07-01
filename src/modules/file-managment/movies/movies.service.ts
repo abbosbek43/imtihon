@@ -3,6 +3,8 @@ import { CreateMovieDto } from './dto/create-movie.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 import { v4 as uuidV4 } from 'uuid';
+import * as fs from 'fs';
+import * as path from 'path';
 
 @Injectable()
 export class MoviesService {
@@ -80,15 +82,51 @@ export class MoviesService {
     };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} movie`;
+  async findOne(id: string) {
+    const existsMovie= await this.prisma.movie.findFirst({where:{id:id}})
+    if(!existsMovie) throw new NotFoundException('movie not foud')
+
+    return await this.prisma.movie.findFirst({where:{id:id}});
   }
 
   update(id: number, updateMovieDto: UpdateMovieDto) {
     return `This action updates a #${id} movie`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} movie`;
+  async remove(id: string) {
+    const movie = await this.prisma.movie.findUnique({
+      where: { id },
+      include: {
+        categories: true,
+      },
+    });
+
+    if (!movie) {
+      throw new NotFoundException('Movie not found');
+    }
+
+    
+    if (movie.posterUrl) {
+      const posterFileName = path.basename(movie.posterUrl); 
+      const posterFilePath = path.join(process.cwd(), 'src', 'uploads', 'posters', posterFileName);
+
+      if (fs.existsSync(posterFilePath)) {
+        fs.unlinkSync(posterFilePath); 
+      }
+    }
+
+ 
+    await this.prisma.movieCategory.deleteMany({
+      where: { movieId: id },
+    });
+
+  
+    await this.prisma.movie.delete({
+      where: { id },
+    });
+
+    return {
+      message: 'Movie and its poster file deleted successfully',
+    };
   }
 }
